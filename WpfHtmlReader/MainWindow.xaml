@@ -5,8 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfHtmlReader"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="HTML Reader" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.6*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.33*"></ColumnDefinition>
+            <ColumnDefinition Width="0.33*"></ColumnDefinition>
+            <ColumnDefinition Width="0.33*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <GroupBox x:Name="groupBox" Header="Путь к файлу" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="0" Margin="5">
+            <TextBlock x:Name="textBlockFilePath" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </GroupBox>
+        <Button x:Name="buttonOpenFile" Content="Открыть файл" Grid.Column="0" Grid.Row="1" Click="buttonOpenFile_Click" Margin="20"/>
+        <GroupBox x:Name="groupBoxTextSearch" Header="Искомый текст" Grid.Column="1" Grid.Row="1" Margin="5">
+            <TextBox x:Name="textBoxSearching" TextWrapping="Wrap" Text="&lt;a&gt;" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5"/>
+        </GroupBox>
+        <Button x:Name="buttonStartSearching" Content="Начать поиск" Grid.Column="2" Grid.Row="1" Margin="20" Click="buttonStartSearching_Click"/>
+        <ListBox x:Name="listBoxWithUrls" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <ListBox x:Name="listBoxWithCounts" Grid.Column="2" Grid.Row="2"/>
+
     </Grid>
 </Window>
