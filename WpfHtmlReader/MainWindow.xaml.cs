@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,32 +29,36 @@ namespace WpfHtmlReader
 
         string filename;
         List<string> listOfUrls = new List<string>();
+        public static CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        CancellationToken token = cancelTokenSource.Token;
 
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
-            // Create OpenFileDialog 
-            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
+            buttonStartSearching.IsEnabled = false;
 
-            // Set filter for file extension and default file extension 
-            openDialog.DefaultExt = ".txt";
-            openDialog.Filter = "TXT Files (*.txt)|*.txt|All Files (*.*)|*.*";
-
-
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = openDialog.ShowDialog();
-
-
-            // Get the selected file name and display in a TextBox 
-            if (result == true)
+            filename = Worker.FileOpener();
+            if (filename == "false")
             {
-                // Open document 
-                filename = openDialog.FileName;
-                textBlockFilePath.Text = filename;
+                MessageBox.Show("Ошибка открытия файла.");
+                return;
             }
+
+            textBlockFilePath.Text = filename;
+
+            listOfUrls = Worker.UrlExtractor(filename);
+            if (listOfUrls.Count == 0)
+            {
+                MessageBox.Show("В выбранном файле не найдено ссылок.");
+                return;
+            }
+            listBoxWithUrls.ItemsSource = listOfUrls;
+
+            buttonStartSearching.IsEnabled = true;
         }
 
         private async void buttonStartSearching_Click(object sender, RoutedEventArgs e)
         {
+            
             if (String.IsNullOrEmpty(textBlockFilePath.Text))
             {
                 MessageBox.Show("Не выбран файл для работы.");
@@ -66,39 +71,37 @@ namespace WpfHtmlReader
                 return;
             }
 
-            string textFromSearchingTextBox = textBoxSearching.Text;
+            //string textFromSearchingTextBox = textBoxSearching.Text;
 
-            List<string> listOfStringsFromFile = new List<string>();
-            listOfStringsFromFile = File.ReadLines(filename).ToList();
-            listOfUrls = UrlValidation.ValidationCheck(listOfStringsFromFile);
+            //string[] htmlCodes = new string[listOfUrls.Count];
 
-            listBoxWithUrls.ItemsSource = listOfUrls;
+            //for (int i = 0; i < listOfUrls.Count; i++)
+            //{
+            //    htmlCodes[i] = await Request.GetAsync(listOfUrls[i]);
+            //}
 
-            string[] htmlCodes = new string[listOfUrls.Count];
+            //int[] Counter = new int[listOfUrls.Count];
 
-            for (int i = 0; i < listOfUrls.Count; i++)
-            {
-                htmlCodes[i] = await Request.GetAsync(listOfUrls[i]);
-            }
+            //for (int i = 0; i < listOfUrls.Count; i++)
+            //{
 
-            int[] Counter = new int[listOfUrls.Count];
+            //    int count = 0, n = 0;
 
-            for (int i = 0; i < listOfUrls.Count; i++)
-            {
-                //string page = webBrowserFromGin.Document.Body.InnerText;
-
-                int count = 0, n = 0;
-
-                while ((n = htmlCodes[i].IndexOf(textFromSearchingTextBox, n)) != -1)
-                {
-                    n += textFromSearchingTextBox.Length;
-                    ++count;
-                }
-                Counter[i] = count;
-            }
-
-            listBoxWithCounts.ItemsSource = Counter;
+            //    while ((n = htmlCodes[i].IndexOf(textFromSearchingTextBox, n)) != -1)
+            //    {
+            //        n += textFromSearchingTextBox.Length;
+            //        ++count;
+            //    }
+            //    Counter[i] = count;
+            //}
+            //var Counter = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls);
+            listBoxWithCounts.ItemsSource = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls, token);
             //string htmlCode = await Request.GetAsync(listOfUrls[0]);
+        }
+
+        private void buttonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            cancelTokenSource.Cancel();
         }
     }
 }
