@@ -29,8 +29,8 @@ namespace WpfHtmlReader
 
         string filename;
         List<string> listOfUrls = new List<string>();
-        public static CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-        CancellationToken token = cancelTokenSource.Token;
+        public static CancellationTokenSource cancelTokenSource;
+        //CancellationToken token = cancelTokenSource.Token;
 
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
@@ -51,14 +51,19 @@ namespace WpfHtmlReader
                 MessageBox.Show("В выбранном файле не найдено ссылок.");
                 return;
             }
+
             listBoxWithUrls.ItemsSource = listOfUrls;
 
+            progressBarWork.Maximum = listOfUrls.Count;
+            textBoxSearching.IsEnabled = true;
             buttonStartSearching.IsEnabled = true;
         }
 
         private async void buttonStartSearching_Click(object sender, RoutedEventArgs e)
         {
-            
+            buttonCancel.IsEnabled = true;
+            cancelTokenSource = new CancellationTokenSource();
+            CancellationToken token = cancelTokenSource.Token;
             if (String.IsNullOrEmpty(textBlockFilePath.Text))
             {
                 MessageBox.Show("Не выбран файл для работы.");
@@ -71,37 +76,14 @@ namespace WpfHtmlReader
                 return;
             }
 
-            //string textFromSearchingTextBox = textBoxSearching.Text;
-
-            //string[] htmlCodes = new string[listOfUrls.Count];
-
-            //for (int i = 0; i < listOfUrls.Count; i++)
-            //{
-            //    htmlCodes[i] = await Request.GetAsync(listOfUrls[i]);
-            //}
-
-            //int[] Counter = new int[listOfUrls.Count];
-
-            //for (int i = 0; i < listOfUrls.Count; i++)
-            //{
-
-            //    int count = 0, n = 0;
-
-            //    while ((n = htmlCodes[i].IndexOf(textFromSearchingTextBox, n)) != -1)
-            //    {
-            //        n += textFromSearchingTextBox.Length;
-            //        ++count;
-            //    }
-            //    Counter[i] = count;
-            //}
-            //var Counter = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls);
             listBoxWithCounts.ItemsSource = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls, token);
-            //string htmlCode = await Request.GetAsync(listOfUrls[0]);
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
             cancelTokenSource.Cancel();
+
+            buttonCancel.IsEnabled = false;
         }
     }
 }

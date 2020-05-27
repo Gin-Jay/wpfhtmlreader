@@ -5,30 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfHtmlReader"
         mc:Ignorable="d"
-        Title="HTML Reader" Height="450" Width="800">
+        Title="HTML Reader" Height="450" Width="800" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.15*"></RowDefinition>
             <RowDefinition Height="0.15*"></RowDefinition>
-            <RowDefinition Height="0.6*"></RowDefinition>
-            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.55*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.33*"></ColumnDefinition>
-            <ColumnDefinition Width="0.33*"></ColumnDefinition>
-            <ColumnDefinition Width="0.33*"></ColumnDefinition>
+            <ColumnDefinition Width="33*"></ColumnDefinition>
+            <ColumnDefinition Width="33*"></ColumnDefinition>
+            <ColumnDefinition Width="33*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <GroupBox x:Name="groupBox" Header="Путь к файлу" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="0" Margin="5">
+        <GroupBox x:Name="groupBox" Header="Путь к файлу" Grid.ColumnSpan="4" Grid.Column="0" Grid.Row="0" Margin="5">
             <TextBlock x:Name="textBlockFilePath" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </GroupBox>
         <Button x:Name="buttonOpenFile" Content="Открыть файл" Grid.Column="0" Grid.Row="1" Click="buttonOpenFile_Click" Margin="20"/>
         <GroupBox x:Name="groupBoxTextSearch" Header="Искомый текст" Grid.Column="1" Grid.Row="1" Margin="5">
-            <TextBox x:Name="textBoxSearching" TextWrapping="Wrap" Text="&lt;a" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5"/>
+            <TextBox x:Name="textBoxSearching" TextWrapping="Wrap" Text="&lt;a" VerticalAlignment="Center" Margin="5" IsEnabled="False"/>
         </GroupBox>
-        <Button x:Name="buttonStartSearching" Content="Начать поиск" Grid.Column="2" Grid.Row="1" Margin="20" Click="buttonStartSearching_Click" IsEnabled="False"/>
-        <ListBox x:Name="listBoxWithUrls" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
-        <ListBox x:Name="listBoxWithCounts" Grid.Column="2" Grid.Row="2"/>
-        <Button x:Name="buttonCancel" Content="Отмена" Grid.Column="1" Grid.Row="3" Margin="10" Click="buttonCancel_Click"/>
+        <Button x:Name="buttonStartSearching" Content="Начать поиск" Grid.Column="3" Grid.Row="1" Margin="20" Click="buttonStartSearching_Click" IsEnabled="False"/>
+        <GroupBox x:Name="groupBoxProgressBar" Header="Прогресс" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="5">
+            <ProgressBar x:Name="progressBarWork" Margin="5" Minimum="0"/>
+        </GroupBox>
+        <Button x:Name="buttonCancel" Content="Отмена" Grid.Column="2" Grid.Row="2" Margin="20" Click="buttonCancel_Click" IsEnabled="False" />
+        <ListBox x:Name="listBoxWithUrls" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5, 10"/>
+        <ListBox x:Name="listBoxWithCounts" Grid.Column="3" Grid.Row="3"/>
 
     </Grid>
 </Window>
