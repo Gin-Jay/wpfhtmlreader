@@ -23,7 +23,7 @@ namespace WpfHtmlReader
     /// </summary>
     public partial class MainWindow : Window
     {
-        BackgroundWorker bgWorker;
+        //BackgroundWorker bgWorker;
 
         public MainWindow()
         {
@@ -34,12 +34,11 @@ namespace WpfHtmlReader
         string filename;
         List<string> listOfUrls = new List<string>();
         public static CancellationTokenSource cancelTokenSource;
-        //CancellationToken token = cancelTokenSource.Token;
 
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
             buttonStartSearching.IsEnabled = false;
-            listBoxWithUrls.ItemsSource = null;
+            //listBoxWithUrls.ItemsSource = null;
 
             filename = Worker.FileOpener();
 
@@ -60,7 +59,7 @@ namespace WpfHtmlReader
             }
 
 
-            listBoxWithUrls.ItemsSource = listOfUrls;
+            //listBoxWithUrls.ItemsSource = listOfUrls;
 
             progressBarWork.Value = 0;
             progressBarWork.Maximum = listOfUrls.Count*2;
@@ -89,18 +88,26 @@ namespace WpfHtmlReader
 
             ////listBoxWithCounts.ItemsSource = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls, token);
             var resultArray = await new Worker().HtmlWordsCounter(textBoxSearching.Text, listOfUrls, token, progressBarWork);
-            listBoxWithCounts.ItemsSource = resultArray;
-            //TODO change listbox to datagrid
+            //listBoxWithCounts.ItemsSource = resultArray;
             if (!cancelTokenSource.IsCancellationRequested)
             {
                 int maxCounter = resultArray.Max();
                 int maxIndex = resultArray.ToList().IndexOf(maxCounter);
 
-                listBoxWithUrls.Focus();
-                listBoxWithUrls.SelectedIndex = maxIndex;
-                listBoxWithUrls.ScrollIntoView(listBoxWithUrls.SelectedItem);
-                listBoxWithCounts.SelectedIndex = maxIndex;
-                listBoxWithCounts.ScrollIntoView(listBoxWithCounts.SelectedItem);
+                //listBoxWithUrls.Focus();
+                //listBoxWithUrls.SelectedIndex = maxIndex;
+                //listBoxWithUrls.ScrollIntoView(listBoxWithUrls.SelectedItem);
+                //listBoxWithCounts.SelectedIndex = maxIndex;
+                //listBoxWithCounts.ScrollIntoView(listBoxWithCounts.SelectedItem);
+
+                List<FinalDataModel> finalDataList = new List<FinalDataModel>();
+                for (int i = 0; i < listOfUrls.Count; i++)
+                {
+                    finalDataList.Add(new FinalDataModel() {Id = i+1, Url = listOfUrls[i], Repeats = resultArray[i] });
+                }
+                dataGridUrsWithCount.ItemsSource = finalDataList;
+
+                buttonCancel.IsEnabled = false;
 
                 MessageBox.Show($"Максимальное значение = {maxCounter} строка: {maxIndex + 1}");
             }

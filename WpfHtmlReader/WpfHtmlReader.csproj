@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FinalDataModel.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="UrlValidation.cs" />
     <Compile Include="Worker.cs" />
