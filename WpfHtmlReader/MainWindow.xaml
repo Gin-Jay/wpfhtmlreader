@@ -31,7 +31,7 @@
         </GroupBox>
         <Button x:Name="buttonCancel" Content="Отмена" Grid.Column="2" Grid.Row="2" Margin="20" Click="buttonCancel_Click" IsEnabled="False" />
         <ListBox x:Name="listBoxWithUrls" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5, 10"/>
-        <ListBox x:Name="listBoxWithCounts" Grid.Column="3" Grid.Row="3"/>
+        <ListBox x:Name="listBoxWithCounts" Grid.Column="3" Grid.Row="3" Margin="5, 10"/>
 
     </Grid>
 </Window>

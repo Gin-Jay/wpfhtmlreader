@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,9 +23,12 @@ namespace WpfHtmlReader
     /// </summary>
     public partial class MainWindow : Window
     {
+        BackgroundWorker bgWorker;
+
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         string filename;
@@ -35,26 +39,31 @@ namespace WpfHtmlReader
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
             buttonStartSearching.IsEnabled = false;
+            listBoxWithUrls.ItemsSource = null;
 
             filename = Worker.FileOpener();
-            if (filename == "false")
+
+            if (filename == null)
             {
-                MessageBox.Show("Ошибка открытия файла.");
+                MessageBox.Show("Ошибка или отмена операции.");
                 return;
             }
 
             textBlockFilePath.Text = filename;
 
             listOfUrls = Worker.UrlExtractor(filename);
+
             if (listOfUrls.Count == 0)
             {
                 MessageBox.Show("В выбранном файле не найдено ссылок.");
                 return;
             }
 
+
             listBoxWithUrls.ItemsSource = listOfUrls;
 
-            progressBarWork.Maximum = listOfUrls.Count;
+            progressBarWork.Value = 0;
+            progressBarWork.Maximum = listOfUrls.Count*2;
             textBoxSearching.IsEnabled = true;
             buttonStartSearching.IsEnabled = true;
         }
@@ -62,8 +71,10 @@ namespace WpfHtmlReader
         private async void buttonStartSearching_Click(object sender, RoutedEventArgs e)
         {
             buttonCancel.IsEnabled = true;
+
             cancelTokenSource = new CancellationTokenSource();
             CancellationToken token = cancelTokenSource.Token;
+
             if (String.IsNullOrEmpty(textBlockFilePath.Text))
             {
                 MessageBox.Show("Не выбран файл для работы.");
@@ -76,7 +87,24 @@ namespace WpfHtmlReader
                 return;
             }
 
-            listBoxWithCounts.ItemsSource = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls, token);
+            ////listBoxWithCounts.ItemsSource = await Worker.HtmlWordsCouter(textBoxSearching.Text, listOfUrls, token);
+            var resultArray = await new Worker().HtmlWordsCounter(textBoxSearching.Text, listOfUrls, token, progressBarWork);
+            listBoxWithCounts.ItemsSource = resultArray;
+            //TODO change listbox to datagrid
+            if (!cancelTokenSource.IsCancellationRequested)
+            {
+                int maxCounter = resultArray.Max();
+                int maxIndex = resultArray.ToList().IndexOf(maxCounter);
+
+                listBoxWithUrls.Focus();
+                listBoxWithUrls.SelectedIndex = maxIndex;
+                listBoxWithUrls.ScrollIntoView(listBoxWithUrls.SelectedItem);
+                listBoxWithCounts.SelectedIndex = maxIndex;
+                listBoxWithCounts.ScrollIntoView(listBoxWithCounts.SelectedItem);
+
+                MessageBox.Show($"Максимальное значение = {maxCounter} строка: {maxIndex + 1}");
+            }
+
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)

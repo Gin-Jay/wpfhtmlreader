@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace WpfHtmlReader
 {
+
     class Worker
     {
+        delegate void UpdateProgressBarDelegate(DependencyProperty dp, object value);
+
         public static string FileOpener()
         {
             string filename;
@@ -24,16 +30,14 @@ namespace WpfHtmlReader
             Nullable<bool> result = openDialog.ShowDialog();
 
             // Get the selected file name and display in a TextBox 
-            if (result == true)
+            if (result.HasValue && result.Value )
             {
                 // Open document 
                 filename = openDialog.FileName;
                 return filename;
             }
-            else
-            {
-                return result.ToString();
-            }
+
+            return null;
         }
 
         public static List<string> UrlExtractor(string filename)
@@ -43,13 +47,28 @@ namespace WpfHtmlReader
             return listOfStringsFromFile;
         }
 
-        public static async Task<int[]> HtmlWordsCouter (string searchingWord, List<string> listOfUrls, CancellationToken token)
+
+        
+        //double value = 0;
+        // foreach (string item in FilesToCopy)
+        // {
+        //     File.Copy(item, OutputFolderName);
+        //     Dispatcher.Invoke(updProgress, new object[] { ProgressBar.ValueProperty, ++value  });
+
+        public async Task<int[]> HtmlWordsCounter (string searchingWord, List<string> listOfUrls, CancellationToken token, ProgressBar progressBar)
         {
             string[] htmlCodes = new string[listOfUrls.Count];
+
+            UpdateProgressBarDelegate updProgress = new UpdateProgressBarDelegate(progressBar.SetValue);
+
+            double value = 0;
 
             for (int i = 0; i < listOfUrls.Count; i++)
             {
                 htmlCodes[i] = await Request.GetAsync(listOfUrls[i]);
+
+                Application.Current.Dispatcher.Invoke(updProgress, new object[] { ProgressBar.ValueProperty, ++value });
+
                 if (token.IsCancellationRequested)
                 {
                     MessageBox.Show("Операция поиска прервана");
@@ -57,12 +76,13 @@ namespace WpfHtmlReader
                 }
             }
 
-            int[] Counter = new int[listOfUrls.Count];
+            int[] counter = new int[listOfUrls.Count];
 
             for (int i = 0; i < listOfUrls.Count; i++)
             {
                 int count = 0, n = 0;
 
+                Application.Current.Dispatcher.Invoke(updProgress, new object[] { ProgressBar.ValueProperty, ++value });
                 while ((n = htmlCodes[i].IndexOf(searchingWord, n)) != -1)
                 {
                     n += searchingWord.Length;
@@ -74,9 +94,10 @@ namespace WpfHtmlReader
                         return null;
                     }
                 }
-                Counter[i] = count;
+                counter[i] = count;
             }
-            return await Task.FromResult(Counter);
+            return await Task.FromResult(counter);
         }
+
     }
 }
