@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace WpfHtmlReader
 {
@@ -46,15 +43,7 @@ namespace WpfHtmlReader
 
             return listOfStringsFromFile;
         }
-
-
-        
-        //double value = 0;
-        // foreach (string item in FilesToCopy)
-        // {
-        //     File.Copy(item, OutputFolderName);
-        //     Dispatcher.Invoke(updProgress, new object[] { ProgressBar.ValueProperty, ++value  });
-
+             
         public async Task<int[]> HtmlWordsCounter (string searchingWord, List<string> listOfUrls, CancellationToken token, ProgressBar progressBar)
         {
             string[] htmlCodes = new string[listOfUrls.Count];
