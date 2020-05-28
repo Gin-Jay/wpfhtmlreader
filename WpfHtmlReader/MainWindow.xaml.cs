@@ -86,6 +86,11 @@ namespace WpfHtmlReader
                 }
 
                 dataGridUrsWithCount.ItemsSource = finalDataList;
+                if (maxCounter == 0)
+                {
+                    MessageBox.Show("Вхождений не найдено");
+                    return;
+                }
                 dataGridUrsWithCount.SelectedIndex = maxIndex;
                 dataGridUrsWithCount.Focus();
                 dataGridUrsWithCount.ScrollIntoView(dataGridUrsWithCount.SelectedItem);

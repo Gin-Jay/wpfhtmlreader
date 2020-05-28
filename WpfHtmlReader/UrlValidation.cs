@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace WpfHtmlReader
 {
@@ -8,16 +9,21 @@ namespace WpfHtmlReader
         public static List<string> ValidationCheck(List<string> fileLines)
         {
             List<string> urlList = new List<string>();
-            Uri uriResult;
+            string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+
             foreach (var line in fileLines)
             {
-                bool result = Uri.TryCreate(line, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-                if (result == true)
+                Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                if (Rgx.IsMatch(line))
                 {
-                    urlList.Add(line);
+                    if (!line.StartsWith("http") && !line.StartsWith("https"))
+                        urlList.Add($"http://{line}");
+                    else
+                        urlList.Add(line);
+
                 }
             }
-            
+
             return urlList;
         }
     }
