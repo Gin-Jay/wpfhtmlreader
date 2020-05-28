@@ -59,7 +59,6 @@ namespace WpfHtmlReader
             cancelTokenSource = new CancellationTokenSource();
             CancellationToken token = cancelTokenSource.Token;
 
-            //убрать или заменить проверку на filename
             if (String.IsNullOrEmpty(textBlockFilePath.Text))
             {
                 MessageBox.Show("Не выбран файл для работы.");
